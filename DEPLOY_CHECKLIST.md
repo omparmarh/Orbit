@@ -1,60 +1,74 @@
 # Orbit - Deployment Checklist
-# Legend: [DONE] = Agent completed | [YOU] = You must do this | [TODO] = Agent will do this
+# Legend: [DONE] = Agent completed | [YOU] = You must do this | [WAITING] = Agent waiting on your action
 
 ---
 
 ## PHASE 1 - Git and GitHub
 
 [DONE] .gitignore created
-[DONE] Git repository initialised
-[DONE] First commit made
+[DONE] Git repository initialised (git init)
+[DONE] First commit made (46 files committed)
+[DONE] README.md written with full project description
+[DONE] Second commit made (Capacitor config + README)
 
-[YOU] CREATE GITHUB REPO (manual - browser required)
+[YOU] CREATE GITHUB REPO AND PUSH  <-- DO THIS NOW
+======================================================
   1. Open https://github.com/new in your browser
   2. Log in with: omhparmar2008@gmail.com
   3. Repository name: orbit
   4. Set to: Public
-  5. Do NOT tick "Add README" (we already have one)
+  5. Do NOT tick "Add README" or "Add .gitignore" (we already have them)
   6. Click "Create repository"
-  7. Then paste these commands in Terminal (replace YOUR_USERNAME with your GitHub username):
+  7. GitHub will show you a page. Find the section "push an existing repository"
+  8. Copy those 2 commands and paste them in your Terminal.
+     They will look like this (with YOUR actual username filled in):
 
-     cd "/Users/macbookair/Documents/my projects/orbit"
-     git remote add origin https://github.com/YOUR_USERNAME/orbit.git
+     git remote add origin https://github.com/omhparmar2008/orbit.git
      git branch -M main
      git push -u origin main
+
+  NOTE: When it asks for username = your GitHub username
+        When it asks for password = use a Personal Access Token (NOT your password):
+        - Go to: https://github.com/settings/tokens/new
+        - Name: orbit-push
+        - Expiration: 90 days
+        - Tick the "repo" checkbox
+        - Click "Generate token"
+        - Copy that token and use it as the password
 
 ---
 
 ## PHASE 2 - Supabase (Auth and Database)
 
-[YOU] CREATE SUPABASE PROJECT (manual - browser required)
+[WAITING] Agent is waiting for you to complete this before deployment works
+
+[YOU] CREATE SUPABASE PROJECT
   1. Open https://supabase.com in your browser
-  2. Click "Start your project" and sign in with Google (omhparmar2008@gmail.com)
+  2. Click "Start your project" - sign in with Google (omhparmar2008@gmail.com)
   3. Click "New Project":
      - Name: orbit-social
-     - DB password: OrbitSocial2024#   <-- SAVE THIS!
+     - DB password: OrbitSocial2024#   (SAVE THIS SOMEWHERE SAFE)
      - Region: Southeast Asia (or nearest to you)
-  4. Wait about 1 minute for the project to be ready
+  4. Wait about 1 minute for the project to spin up
 
-[YOU] COPY SUPABASE KEYS
-  1. In Supabase dashboard go to: Project Settings > API
+[YOU] COPY SUPABASE KEYS AND CREATE .env FILE
+  1. In Supabase dashboard -> Project Settings -> API
   2. Copy the "Project URL" (looks like: https://xxxx.supabase.co)
-  3. Copy the "anon public" key (long text under Project API keys)
-  4. Open Terminal and run these commands one by one:
+  3. Copy the "anon public" key (long text under "Project API keys")
+  4. Open Terminal and run these commands exactly:
 
      cd "/Users/macbookair/Documents/my projects/orbit"
+     echo 'VITE_SUPABASE_URL=PASTE_YOUR_URL_HERE' > .env
+     echo 'VITE_SUPABASE_ANON_KEY=PASTE_YOUR_KEY_HERE' >> .env
 
-     Then create the .env file by running:
-     echo 'VITE_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co' > .env
-     echo 'VITE_SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_KEY' >> .env
+     (Replace PASTE_YOUR_URL_HERE and PASTE_YOUR_KEY_HERE with the real values)
 
-     Replace YOUR_PROJECT_ID and YOUR_ANON_PUBLIC_KEY with the values you copied.
+[YOU] RUN DATABASE SQL IN SUPABASE
+  1. Supabase dashboard -> SQL Editor -> click "New query"
+  2. Paste the entire block below and click Run:
+  3. You should see: "Success. No rows returned."
 
-[YOU] RUN DATABASE SQL (manual - Supabase SQL editor)
-  1. In Supabase dashboard go to: SQL Editor > New query
-  2. Copy and paste ALL of the SQL below, then click Run:
-
---- SQL START ---
+--- PASTE ALL OF THIS SQL ---
 create extension if not exists "uuid-ossp";
 
 create table if not exists public.profiles (
@@ -94,94 +108,101 @@ $$ language plpgsql security definer;
 create or replace trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
---- SQL END ---
-
-  3. You should see "Success. No rows returned." - that means it worked.
+--- END SQL ---
 
 ---
 
-## PHASE 3 - Deploy Frontend (Vercel)
+## PHASE 3 - Deploy Frontend to Vercel (Live Web App)
 
-[DONE] Vercel CLI installed
-[DONE] Production build verified
+[DONE] Vercel CLI ready (use via npx vercel)
+[DONE] Production build passes (npm run build verified)
 
-[YOU] DEPLOY TO VERCEL
-  After you have done Phases 1 and 2, run these commands in Terminal:
+[YOU] DEPLOY TO VERCEL  <-- Do this AFTER finishing Supabase setup above
+  Open Terminal and run these commands one at a time:
 
+  Step A - Go to project:
      cd "/Users/macbookair/Documents/my projects/orbit"
-     vercel login
 
-  - Choose "Continue with GitHub" and authorise in the browser that opens
-  - Then run:
+  Step B - Login to Vercel:
+     npx vercel login
+     (Choose "Continue with GitHub" and approve in the browser that opens)
 
-     vercel
+  Step C - Deploy:
+     npx vercel
 
-  When it asks questions:
-  - "Set up and deploy?" -> Y
-  - "Which scope?" -> pick your username
-  - "Link to existing project?" -> N
-  - "Project name?" -> orbit
-  - "Directory?" -> ./ (just press Enter)
-  - It will auto-detect Vite
+     When asked:
+     - "Set up and deploy?" -> press Y then Enter
+     - "Which scope?" -> pick your username
+     - "Link to existing project?" -> press N then Enter
+     - "Project name?" -> type: orbit  then Enter
+     - Leave everything else as default (just press Enter)
 
-  After the preview URL appears and works, run:
-     vercel --prod
+  Step D - Make it live (production):
+     npx vercel --prod
 
-  Your final live URL will be something like: https://orbit-app.vercel.app
+  Your live URL will print out. It will look like: https://orbit-xyz.vercel.app
 
-[YOU] ADD ENV VARS TO VERCEL (if not added during deploy)
+  Step E - Add environment variables in Vercel dashboard:
   1. Go to https://vercel.com/dashboard
   2. Click on your "orbit" project
-  3. Go to Settings > Environment Variables
-  4. Add:
-     Name: VITE_SUPABASE_URL     Value: (your supabase URL)
-     Name: VITE_SUPABASE_ANON_KEY  Value: (your supabase anon key)
-  5. Go to Deployments and click "Redeploy" on the latest deployment
+  3. Click Settings -> Environment Variables
+  4. Add these two:
+     Name: VITE_SUPABASE_URL        Value: (your supabase URL from phase 2)
+     Name: VITE_SUPABASE_ANON_KEY   Value: (your supabase anon key from phase 2)
+  5. Click Deployments -> click the three dots on latest -> Redeploy
 
 ---
 
-## PHASE 4 - Android APK (Capacitor)
+## PHASE 4 - Android APK
 
-[DONE] Capacitor packages installed
-[DONE] Android platform added to project
-[DONE] Web build synced into Android project
+[DONE] @capacitor/core, @capacitor/cli, @capacitor/android installed
+[DONE] capacitor.config.ts created with app name "Orbit" and dark background
+[IN PROGRESS] Android platform being added (downloading Gradle - may take 5 min)
+[DONE] Production build ready in dist/ folder
 
-[YOU] INSTALL ANDROID STUDIO (required to build APK)
-  1. Download from: https://developer.android.com/studio
-  2. Run the installer with default settings
-  3. Open Android Studio once to let it download the Android SDK (takes ~5 min)
-  4. Then run in Terminal:
+[YOU] INSTALL ANDROID STUDIO (if you don't have it)
+  Download from: https://developer.android.com/studio
+  Install with default settings. Open once to download Android SDK.
+
+[YOU] GENERATE THE APK
+  After Android Studio is installed, run in Terminal:
 
      cd "/Users/macbookair/Documents/my projects/orbit"
      npm run build
      npx cap sync
      npx cap open android
 
-  5. Android Studio will open with the Orbit project loaded
-
-[YOU] GENERATE THE APK IN ANDROID STUDIO
-  1. In Android Studio top menu: Build > Generate Signed Bundle / APK...
-  2. Select: APK -> click Next
-  3. Click "Create new..." for keystore:
-     - Save to: ~/Desktop/orbit-keystore.jks
+  Then in Android Studio:
+  1. Wait for "Gradle sync" to finish (bottom bar shows progress)
+  2. Go to: Build -> Generate Signed Bundle / APK...
+  3. Select: APK -> click Next
+  4. Click "Create new..." for keystore:
+     - Save path: Desktop/orbit-keystore.jks
      - Password: OrbitKey2024#
-     - Key alias: orbit
+     - Alias: orbit
      - Key password: OrbitKey2024#
-     - First and Last Name: your name
-     - Click OK
-  4. Click Next
-  5. Select "release" build variant
-  6. Click Finish
-  7. Wait for build to complete (1-3 minutes)
-  8. APK file location: android/app/build/outputs/apk/release/app-release.apk
-  9. Send that file to your phone via email, Google Drive, or USB cable
+     - First name: your name
+  5. Next -> select "release" -> Finish
+  6. APK saves to: android/app/build/outputs/apk/release/app-release.apk
+  7. AirDrop / email that file to your Android phone and install it
 
 ---
 
-## NOTES
+## CURRENT STATUS
 
-- All code is ready - splash screen, login screen, logo are all built
-- The app already has: auth gate, supabase client, splash animation, real logo
-- After Supabase is set up users can sign up / log in through the app
-- The Vercel deployment auto-rebuilds every time you push to GitHub (main branch)
-- Keep orbit-keystore.jks file safe - you need it for every future APK update
+What the agent has done:
+  - Built auth system (login/signup screens with Supabase)
+  - Built animated splash screen with orbital ring animation
+  - Added real Orbit logo (AI generated, glowing cyan orb design)
+  - Added sign-out button to app header
+  - Git repo initialised with 2 commits (all files tracked)
+  - Capacitor configured for Android (com.orbit.social)
+  - Production build verified and working
+  - Full README written for GitHub
+
+What you need to do (in order):
+  1. Create GitHub repo and push (Phase 1)
+  2. Create Supabase project and run SQL (Phase 2)
+  3. Create .env file with Supabase keys (Phase 2)
+  4. Deploy to Vercel (Phase 3)
+  5. Install Android Studio and generate APK (Phase 4)
