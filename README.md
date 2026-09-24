@@ -1,32 +1,71 @@
-# React + TypeScript + Vite
+# Orbit - Your Social Universe
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A premium social sharing app built with React, Vite, TypeScript, and Supabase.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Synchronized Live Rooms** - Watch and discuss content together in real-time
+- **Social Circles** - Persistent interest groups with collaborative streaks
+- **Discovery Feed** - Topic channels, trending content, and creator drops
+- **Community Challenges** - Participate in group challenges and submit entries
+- **Bookmarks & Saved Items** - Save content to revisit later
+- **Wellbeing Dashboard** - Responsible usage tracking and streak management
+- **Full Authentication** - Secure login/signup via Supabase Auth
+- **Beautiful Splash Screen** - Animated orbital rings on launch
+- **Android APK** - Native mobile app via Capacitor
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend:** React 18 + TypeScript + Vite
+- **Auth & Database:** Supabase (PostgreSQL + Auth)
+- **Styling:** Vanilla CSS with CSS variables (dark glassmorphism theme)
+- **Audio:** Web Audio API for tactile sound feedback
+- **Mobile:** Capacitor for Android APK
 
-## Expanding the Oxlint configuration
+## Getting Started (Local Development)
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/orbit.git
+   cd orbit
+   ```
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up Supabase:
+   - Create a project at https://supabase.com
+   - Copy your Project URL and anon key
+   - Create a `.env` file:
+     ```
+     VITE_SUPABASE_URL=https://your-project.supabase.co
+     VITE_SUPABASE_ANON_KEY=your-anon-key
+     ```
+   - Run the SQL in `supabase/schema.sql` in the Supabase SQL editor
+
+4. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+
+## Deployment
+
+See [DEPLOY_CHECKLIST.md](./DEPLOY_CHECKLIST.md) for the full step-by-step deployment guide covering:
+- GitHub push
+- Supabase database setup
+- Vercel hosting
+- Android APK generation
+
+## Build
+
+```bash
+npm run build    # production build
+npx cap sync     # sync to Android
+npx cap open android  # open in Android Studio
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## License
+
+MIT
