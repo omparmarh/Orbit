@@ -1,0 +1,25 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Build output
+dist/
+.vite/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local env files - NEVER commit these
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+
+# Capacitor native (optional - uncomment to exclude from git)
+# android/
+# ios/
